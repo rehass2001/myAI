@@ -5,7 +5,6 @@ import { IntentionModule } from "@/modules/intention";
 import { ResponseModule } from "@/modules/response";
 import { PINECONE_INDEX_NAME } from "@/configuration/pinecone";
 import Anthropic from "@anthropic-ai/sdk";
-import { IntentionType } from "@/types/chat";
 
 export const maxDuration = 60;
 
@@ -59,11 +58,9 @@ export async function POST(req: Request) {
   const intention: Intention = await determineIntention(chat);
 
   if (intention.type === "question") {
-    return ResponseModule.respondToQuestion(chat, providers);
+    return ResponseModule.respondToQuestion(chat, providers, pineconeIndex);
   } else if (intention.type === "hostile_message") {
     return ResponseModule.respondToHostileMessage(chat, providers);
-  } else if (intention.type === "music_recommendation") {
-    return ResponseModule.respondToMusicRequest(chat);
   } else {
     return ResponseModule.respondToRandomMessage(chat, providers);
   }
