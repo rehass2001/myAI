@@ -3,8 +3,8 @@ import SpotifyWebApi from "spotify-web-api-node";
 
 // Set up Spotify API client
 const spotifyApi = new SpotifyWebApi({
-    clientId: process.env.SPOTIFY_CLIENT_ID,
-    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    clientId: process.env.ec7da87dbebf4655843d62a61a9af439,
+    clientSecret: process.env.107335ff5b674348a32d8c47403f2fbc,
 });
 
 async function getSpotifyAccessToken() {
