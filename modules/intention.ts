@@ -38,22 +38,6 @@ export class IntentionModule {
     if (!response.choices[0].message.parsed) {
       return { type: "random" as IntentionType };
     }
-
-    // Detect Music Recommendation Requests
-    const MUSIC_KEYWORDS = [
-      "recommend music",
-      "suggest a song",
-      "play something",
-      "music for my mood",
-      "what should I listen to",
-      "give me a playlist"
-    ];
-
-    const userMessage = mostRecentMessages[mostRecentMessages.length - 1].content.toLowerCase();
-    if (MUSIC_KEYWORDS.some(keyword => userMessage.includes(keyword))) {
-      return { type: "music_recommendation" as IntentionType };
-    }
-
     return response.choices[0].message.parsed;
   }
 }
