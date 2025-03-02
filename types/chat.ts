@@ -28,3 +28,5 @@ export const loadingIndicatorSchema = z.object({
   icon: indicatorIconTypeSchema,
 });
 export type LoadingIndicator = z.infer<typeof loadingIndicatorSchema>;
+export type IntentionType = "random" | "question" | "hostile_message" | "music_recommendation";
+
