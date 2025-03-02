@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   const intention: Intention = await determineIntention(chat);
 
   if (intention.type === "question") {
-    return ResponseModule.respondToQuestion(chat, providers, pineconeIndex);
+    return ResponseModule.respondToQuestion(chat, providers);
   } else if (intention.type === "hostile_message") {
     return ResponseModule.respondToHostileMessage(chat, providers);
   } else if (intention.type === "music_recommendation") {
