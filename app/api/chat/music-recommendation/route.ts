@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const data = await spotifyApi.searchTracks(`genre:${genre}`, { limit: 5 });
-        const tracks = data.body.tracks?.items.map((track) => ({
+        const tracks = data.body.tracks?.items.map((track: SpotifyApi.TrackObjectFull) => ({
             name: track.name,
             artist: track.artists[0].name,
             url: track.external_urls.spotify,
@@ -56,3 +56,4 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Failed to fetch music recommendations." }, { status: 500 });
     }
 }
+
