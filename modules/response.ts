@@ -44,6 +44,7 @@ import {
   QUESTION_RESPONSE_TEMPERATURE,
   RANDOM_RESPONSE_TEMPERATURE,
 } from "@/configuration/models";
+import { IntentionModule } from "@/modules/intention";
 
 /**
  * ResponseModule is responsible for collecting data and building a response
@@ -141,22 +142,18 @@ export class ResponseModule {
     /**
      * Fetch music recommendations based on user mood
      */
-    const mood = chat.messages[chat.messages.length - 1].content.toLowerCase(); // User's last message
-
+    const mood = chat.messages[chat.messages.length - 1].content.toLowerCase();
     try {
       const response = await fetch(`https://my-ai-six-neon.vercel.app/api/music-recommendation?mood=${mood}`);
       const data = await response.json();
-
       if (data.error) {
         return new Response(JSON.stringify({ message: "Sorry, I couldn't find music for that mood." }), {
           headers: { "Content-Type": "application/json" },
         });
       }
-
       const recommendations = data.recommendations
         .map((track: any) => `${track.name} by ${track.artist} - [Listen](${track.url})`)
         .join("\n");
-
       return new Response(JSON.stringify({ message: `Here are some songs for your mood:\n${recommendations}` }), {
         headers: { "Content-Type": "application/json" },
       });
@@ -176,80 +173,14 @@ export class ResponseModule {
     /**
      * Determine the response based on user intent
      */
-    if (chat.intent?.type === "music_recommendation") {
+    const intention = await IntentionModule.detectIntention({ chat, openai: providers.openai });
+
+    if (intention.type === "music_recommendation") {
       return this.respondToMusicRequest(chat);
     }
 
-    const PROVIDER_NAME: ProviderName = QUESTION_RESPONSE_PROVIDER;
-    const MODEL_NAME: string = QUESTION_RESPONSE_MODEL;
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        queueIndicator({
-          controller,
-          status: "Figuring out what your answer looks like",
-          icon: "thinking",
-        });
-        try {
-          const hypotheticalData: string = await generateHypotheticalData(
-            chat,
-            providers.openai
-          );
-          const { embedding }: { embedding: number[] } =
-            await embedHypotheticalData(hypotheticalData, providers.openai);
-          queueIndicator({
-            controller,
-            status: "Reading through documents",
-            icon: "searching",
-          });
-          const chunks: Chunk[] = await searchForChunksUsingEmbedding(
-            embedding,
-            index
-          );
-          const sources: Source[] = await getSourcesFromChunks(chunks);
-          queueIndicator({
-            controller,
-            status: `Read over ${sources.length} documents`,
-            icon: "documents",
-          });
-          const citations: Citation[] = await getCitationsFromChunks(chunks);
-          const contextFromSources = await getContextFromSources(sources);
-          const systemPrompt =
-            RESPOND_TO_QUESTION_SYSTEM_PROMPT(contextFromSources);
-          queueIndicator({
-            controller,
-            status: "Coming up with an answer",
-            icon: "thinking",
-          });
-          queueAssistantResponse({
-            controller,
-            providers,
-            providerName: PROVIDER_NAME,
-            messages: stripMessagesOfCitations(
-              chat.messages.slice(-HISTORY_CONTEXT_LENGTH)
-            ),
-            model_name: MODEL_NAME,
-            systemPrompt,
-            citations,
-            error_message: DEFAULT_RESPONSE_MESSAGE,
-            temperature: QUESTION_RESPONSE_TEMPERATURE,
-          });
-        } catch (error: any) {
-          console.error("Error in respondToQuestion:", error);
-          queueError({
-            controller,
-            error_message: error.message ?? DEFAULT_RESPONSE_MESSAGE,
-          });
-        }
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
+    return new Response(JSON.stringify({ message: "Processing other types of queries." }), {
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
