@@ -39,7 +39,7 @@ export class IntentionModule {
       return { type: "random" as IntentionType };
     }
 
-    //  Detect Music Recommendation Requests
+    // Detect Music Recommendation Requests
     const MUSIC_KEYWORDS = [
       "recommend music",
       "suggest a song",
