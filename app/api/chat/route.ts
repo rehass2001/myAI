@@ -5,6 +5,7 @@ import { IntentionModule } from "@/modules/intention";
 import { ResponseModule } from "@/modules/response";
 import { PINECONE_INDEX_NAME } from "@/configuration/pinecone";
 import Anthropic from "@anthropic-ai/sdk";
+import { IntentionType } from "@/types/chat";
 
 export const maxDuration = 60;
 
