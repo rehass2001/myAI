@@ -57,8 +57,3 @@ export class IntentionModule {
     return response.choices[0].message.parsed;
   }
 }
-
-// Ensure "music_recommendation" is added to IntentionType
-declare module "@/types" {
-  export type IntentionType = "random" | "question" | "hostile_message" | "music_recommendation";
-}
