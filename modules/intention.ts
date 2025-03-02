@@ -58,3 +58,7 @@ export class IntentionModule {
   }
 }
 
+// Ensure "music_recommendation" is added to IntentionType
+declare module "@/types" {
+  export type IntentionType = "random" | "question" | "hostile_message" | "music_recommendation";
+}
